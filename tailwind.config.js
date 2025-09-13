@@ -1,0 +1,36 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', './content/**/*.{md,mdx}'],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'warm-brown': '#B07A4A',
+        'warm-brown-dark': '#C5936B',
+        'neutral-gray': '#4A4A4A',
+        'light-bg': '#FFFFFF',
+        'light-text': '#0B0B0B',
+        'dark-bg': '#0B0B0B',
+        'dark-text': '#FFFFFF',
+      },
+      fontFamily: {
+        'heading': ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
+        'body': ['Inter', 'system-ui', 'sans-serif'],
+      },
+      maxWidth: {
+        'reading': '70ch',
+        'content': '760px',
+      },
+      animation: {
+        'gentle-bounce': 'gentle-bounce 0.6s ease-in-out',
+      },
+      keyframes: {
+        'gentle-bounce': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-2px)' },
+        },
+      },
+    },
+  },
+  plugins: [],
+};
