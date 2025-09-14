@@ -25,17 +25,17 @@ const Projects: React.FC = () => {
   // });
 
   return (
-    <main id="main-content" className="py-20">
-      <div className="container mx-auto px-6">
-        <header className="mb-12">
-          <h1 className="text-4xl font-heading font-bold mb-4">projects</h1>
-          <p className="text-lg text-neutral-gray max-w-2xl">
+    <main id="main-content" className="py-12 sm:py-16 lg:py-20">
+      <div className="container mx-auto px-4 sm:px-6">
+        <header className="mb-8 sm:mb-10 lg:mb-12 text-center">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold mb-4">projects</h1>
+          <p className="text-base sm:text-lg lg:text-xl text-neutral-gray dark:text-neutral-gray-light max-w-2xl mx-auto leading-relaxed">
             a collection of design projects showcasing user experience, interface design, and creative problem-solving.
           </p>
         </header>
 
         {/* Search and filters */}
-        <div className="mb-12 space-y-6">
+        <div className="mb-8 sm:mb-10 lg:mb-12 space-y-4 sm:space-y-6">
           {/* Search */}
 
           {/* Tag filters */}
@@ -69,15 +69,15 @@ const Projects: React.FC = () => {
         </div>
 
         {/* Projects grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {projects.map(project => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
 
         {projects.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-neutral-gray">coming soon! new projects are being crafted behind the scenes.</p>
+          <div className="text-center py-8 sm:py-12">
+            <p className="text-base sm:text-lg text-neutral-gray dark:text-neutral-gray-light">coming soon! new projects are being crafted behind the scenes.</p>
           </div>
         )}
       </div>

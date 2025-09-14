@@ -29,20 +29,20 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         />
       </div>
       
-      <div className="p-6">
-        <h3 className="text-lg font-heading font-semibold mb-2 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
+      <div className="p-4 sm:p-6">
+        <h3 className="text-base sm:text-lg font-heading font-semibold mb-2 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
           {project.title}
         </h3>
         
-        <p className="text-neutral-gray text-sm mb-4 leading-relaxed">
+        <p className="text-neutral-gray dark:text-neutral-gray-light text-sm sm:text-base mb-3 sm:mb-4 leading-relaxed">
           {project.description}
         </p>
         
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {project.tags.map((tag) => (
             <span
               key={tag}
-              className="px-3 py-1 bg-warm-brown/10 text-warm-brown text-xs font-medium rounded-full"
+              className="px-2 sm:px-3 py-1 bg-warm-brown/10 text-warm-brown text-xs font-medium rounded-full"
             >
               {tag}
             </span>

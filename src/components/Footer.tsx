@@ -69,26 +69,26 @@ return (
   };
 
   return (
-    <footer className="bg-light-bg dark:bg-dark-bg border-t border-neutral-gray/20 py-12">
-      <div className="container mx-auto px-6">
-        <div className="flex flex-col items-center space-y-6">
-          <div className="flex items-center space-x-6">
+    <footer className="bg-light-bg dark:bg-dark-bg border-t border-neutral-gray/20 py-8 sm:py-10 lg:py-12">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="flex flex-col items-center space-y-4 sm:space-y-6">
+          <div className="flex items-center space-x-4 sm:space-x-6">
             {socialLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 text-neutral-gray hover:text-warm-brown focus:text-warm-brown transition-colors duration-200 rounded-lg hover:bg-warm-brown/10 focus:bg-warm-brown/10"
+                className="p-2 sm:p-3 text-neutral-gray dark:text-neutral-gray-light hover:text-warm-brown focus:text-warm-brown transition-colors duration-200 rounded-lg hover:bg-warm-brown/10 focus:bg-warm-brown/10"
                 aria-label={`Visit ${link.name} profile`}
               >
-                <SocialIcon icon={link.icon} className="w-5 h-5" />
+                <SocialIcon icon={link.icon} className="w-4 h-4 sm:w-5 sm:h-5" />
               </a>
             ))}
           </div>
           
           <div className="text-center">
-            <p className="text-sm text-neutral-gray">
+            <p className="text-xs sm:text-sm text-neutral-gray dark:text-neutral-gray-light">
               © {currentYear} Sri. All rights reserved.
             </p>
           </div>

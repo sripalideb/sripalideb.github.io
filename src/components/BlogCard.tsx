@@ -26,31 +26,31 @@ const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
   return (
     <Link
       to={`/blog/${post.slug}`}
-      className="group block bg-light-bg dark:bg-dark-bg border border-neutral-gray/20 rounded-lg p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] focus:scale-[1.01] focus:shadow-lg"
+      className="group block bg-light-bg dark:bg-dark-bg border border-neutral-gray/20 rounded-lg p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] focus:scale-[1.01] focus:shadow-lg"
     >
       <div className="flex items-start justify-between mb-3">
         <time 
           dateTime={post.date}
-          className="text-sm text-neutral-gray"
+          className="text-xs sm:text-sm text-neutral-gray dark:text-neutral-gray-light"
         >
           {formatDate(post.date)}
         </time>
         {post.readTime && (
-          <span className="text-sm text-neutral-gray">
+          <span className="text-xs sm:text-sm text-neutral-gray dark:text-neutral-gray-light">
             {post.readTime} min read
           </span>
         )}
       </div>
       
-      <h3 className="text-xl font-heading font-semibold mb-3 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
+      <h3 className="text-lg sm:text-xl font-heading font-semibold mb-3 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
         {post.title}
       </h3>
       
-      <p className="text-neutral-gray mb-4 leading-relaxed">
+      <p className="text-neutral-gray dark:text-neutral-gray-light text-sm sm:text-base mb-4 leading-relaxed">
         {post.excerpt}
       </p>
       
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2">
         {post.tags.map((tag) => (
           <span
             key={tag}

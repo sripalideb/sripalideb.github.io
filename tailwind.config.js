@@ -7,7 +7,8 @@ export default {
       colors: {
         'warm-brown': '#B07A4A',
         'warm-brown-dark': '#C5936B',
-        'neutral-gray': '#4A4A4A',
+        'neutral-gray': '#6B7280', // Improved contrast from #4A4A4A
+        'neutral-gray-light': '#9CA3AF', // For better contrast in dark mode
         'light-bg': '#FFFFFF',
         'light-text': '#0B0B0B',
         'dark-bg': '#0B0B0B',
