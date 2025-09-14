@@ -4,10 +4,8 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   
   const socialLinks = [
-    { name: 'Behance', url: 'https://www.behance.net/sripalideb2', icon: 'behance' },
-    { name: 'Dribbble', url: 'https://dribbble.com', icon: 'dribbble' },
-    { name: 'LinkedIn', url: 'https://www.linkedin.com/in/sripali-deb/', icon: 'linkedin' },
-    { name: 'Medium', url: 'https://medium.com/@sripali.deb.official', icon: 'medium' },
+    { name: 'LinkedIn', url: 'https://www.linkedin.com/in/sripalideb', icon: 'linkedin' },
+    { name: 'Medium', url: 'https://sripalideb.medium.com', icon: 'medium' },
     { name: 'Github', url: 'https://github.com/sripalideb', icon: 'github' },
   ];
 
