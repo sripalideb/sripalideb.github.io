@@ -8,10 +8,10 @@ interface NavProps {
 
 const Nav: React.FC<NavProps> = ({ isMobile = false, onItemClick }) => {
   const navItems = [
-    { to: '/projects', label: 'projects' },
-    { to: '/blog', label: 'blog' },
-    { to: '/resources', label: 'resources' },
     { to: '/about', label: 'about' },
+    { to: '/blog', label: 'blog' },
+    { to: '/projects', label: 'projects' },
+    { to: '/resources', label: 'resources' },
     { to: '/contact', label: 'contact' },
   ];
 
