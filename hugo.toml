@@ -1,0 +1,35 @@
+baseURL = 'https://sripalideb.github.io/'
+languageCode = 'en-us'
+title = 'Sri - Product Designer'
+theme = 'sri-theme'
+
+[params]
+  description = "Product designer crafting meaningful digital experiences. Projects & insights."
+  author = "Sri"
+  
+[menu]
+  [[menu.main]]
+    name = "about"
+    url = "/about/"
+    weight = 1
+  [[menu.main]]
+    name = "blog"
+    url = "/blog/"
+    weight = 2
+  [[menu.main]]
+    name = "projects"
+    url = "/projects/"
+    weight = 3
+  [[menu.main]]
+    name = "resources"
+    url = "/resources/"
+    weight = 4
+  [[menu.main]]
+    name = "contact"
+    url = "/contact/"
+    weight = 5
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

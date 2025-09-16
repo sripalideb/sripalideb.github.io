@@ -1,0 +1,122 @@
+{{ define "main" }}
+<main class="py-12 sm:py-16 lg:py-20">
+  <div class="container mx-auto px-4 sm:px-6">
+    <header class="mb-8 sm:mb-10 lg:mb-12 text-center">
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold mb-4">{{ .Title | lower }}</h1>
+      <p class="text-base sm:text-lg lg:text-xl text-neutral-gray dark:text-neutral-gray-light max-w-2xl mx-auto leading-relaxed">
+        {{ .Description }}
+      </p>
+    </header>
+
+    {{ if eq .Section "blog" }}
+      <!-- Blog posts -->
+      <div class="max-w-4xl space-y-6 sm:space-y-8">
+        {{ range .Pages }}
+        <article class="group block bg-light-bg dark:bg-dark-bg border border-neutral-gray/20 rounded-lg p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] focus:scale-[1.01] focus:shadow-lg">
+          <div class="flex items-start justify-between mb-3">
+            <time datetime="{{ .Date.Format "2006-01-02" }}" class="text-xs sm:text-sm text-neutral-gray dark:text-neutral-gray-light">
+              {{ .Date.Format "January 2, 2006" }}
+            </time>
+            {{ if .Params.readTime }}
+            <span class="text-xs sm:text-sm text-neutral-gray dark:text-neutral-gray-light">
+              {{ .Params.readTime }} min read
+            </span>
+            {{ end }}
+          </div>
+          
+          <h2 class="text-lg sm:text-xl font-heading font-semibold mb-3 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
+            <a href="{{ .Permalink }}" class="no-underline">{{ .Title }}</a>
+          </h2>
+          
+          <p class="text-neutral-gray dark:text-neutral-gray-light text-sm sm:text-base mb-4 leading-relaxed">
+            {{ .Summary }}
+          </p>
+          
+          {{ if .Params.tags }}
+          <div class="flex flex-wrap gap-1.5 sm:gap-2">
+            {{ range .Params.tags }}
+            <span class="px-2 py-1 bg-warm-brown/10 text-warm-brown text-xs font-medium rounded-full">
+              {{ . }}
+            </span>
+            {{ end }}
+          </div>
+          {{ end }}
+        </article>
+        {{ end }}
+      </div>
+    {{ else if eq .Section "projects" }}
+      <!-- Projects grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {{ range .Pages }}
+        <article class="group bg-light-bg dark:bg-dark-bg border border-neutral-gray/20 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:scale-[1.02] focus:shadow-lg">
+          {{ if .Params.image }}
+          <div class="aspect-video bg-neutral-gray/10 overflow-hidden">
+            <img src="{{ .Params.image }}" alt="{{ .Title }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 group-focus:scale-105">
+          </div>
+          {{ end }}
+          
+          <div class="p-4 sm:p-6">
+            <h2 class="text-base sm:text-lg font-heading font-semibold mb-2 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
+              <a href="{{ .Permalink }}" class="no-underline">{{ .Title }}</a>
+            </h2>
+            
+            <p class="text-neutral-gray dark:text-neutral-gray-light text-sm sm:text-base mb-3 sm:mb-4 leading-relaxed">
+              {{ .Summary }}
+            </p>
+            
+            {{ if .Params.tags }}
+            <div class="flex flex-wrap gap-1.5 sm:gap-2">
+              {{ range .Params.tags }}
+              <span class="px-2 sm:px-3 py-1 bg-warm-brown/10 text-warm-brown text-xs font-medium rounded-full">
+                {{ . }}
+              </span>
+              {{ end }}
+            </div>
+            {{ end }}
+          </div>
+        </article>
+        {{ end }}
+      </div>
+    {{ else if eq .Section "resources" }}
+      <!-- Resources grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {{ range .Pages }}
+        <article class="group bg-light-bg dark:bg-dark-bg border border-neutral-gray/20 rounded-lg p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:scale-[1.02] focus:shadow-lg">
+          <div class="mb-4">
+            <h2 class="text-base sm:text-lg font-heading font-semibold mb-2 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
+              <a href="{{ .Params.url | default .Permalink }}" target="_blank" rel="noopener noreferrer" class="no-underline">{{ .Title }}</a>
+            </h2>
+            <p class="text-neutral-gray dark:text-neutral-gray-light text-sm sm:text-base mb-3 leading-relaxed">
+              {{ .Summary }}
+            </p>
+            {{ if .Params.category }}
+            <span class="text-xs text-warm-brown font-medium bg-warm-brown/10 px-2 py-1 rounded-full">
+              {{ .Params.category }}
+            </span>
+            {{ end }}
+          </div>
+          
+          {{ if .Params.tags }}
+          <div class="flex flex-wrap gap-1.5 sm:gap-2">
+            {{ range .Params.tags }}
+            <span class="px-2 py-1 bg-neutral-gray/10 text-neutral-gray dark:text-neutral-gray-light text-xs rounded-full">
+              {{ . }}
+            </span>
+            {{ end }}
+          </div>
+          {{ end }}
+        </article>
+        {{ end }}
+      </div>
+    {{ end }}
+
+    {{ if eq (len .Pages) 0 }}
+    <div class="text-center py-8 sm:py-12">
+      <p class="text-base sm:text-lg text-neutral-gray dark:text-neutral-gray-light">
+        {{ if eq .Section "blog" }}cooking up something fun. stay tuned!!!!{{ else if eq .Section "projects" }}coming soon! new projects are being crafted behind the scenes.{{ else if eq .Section "resources" }}still growing… new resources will appear here soon.{{ end }}
+      </p>
+    </div>
+    {{ end }}
+  </div>
+</main>
+{{ end }}

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+    <meta name="author" content="{{ .Site.Params.author }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ .Permalink }}">
+    <meta property="og:title" content="{{ if .Title }}{{ .Title }}{{ else }}{{ .Site.Title }}{{ end }}">
+    <meta property="og:description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ .Permalink }}">
+    <meta property="twitter:title" content="{{ if .Title }}{{ .Title }}{{ else }}{{ .Site.Title }}{{ end }}">
+    <meta property="twitter:description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sanchez:ital@0;1&family=Vollkorn:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&family=Libertinus+Keyboard&family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&family=Story+Script&family=Tagesschrift&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sanchez:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sanchez:ital@0;1&family=Vollkorn:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <title>{{ if .Title }}{{ .Title }} - {{ .Site.Title }}{{ else }}{{ .Site.Title }}{{ end }}</title>
+
+    <link rel="stylesheet" href="/css/main.min.css">
+
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.classList.contains('dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            html.classList.remove(currentTheme);
+            html.classList.add(newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        document.addEventListener('DOMContentLoaded', function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme);
+        });
+    </script>
+</head>
+
+<body class="h-full bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="sticky top-0 z-50 bg-light-bg/90 dark:bg-dark-bg/90 backdrop-blur-sm border-b border-neutral-gray/20">
+            <div class="container mx-auto px-4 sm:px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4 sm:space-x-8">
+                        <div class="text-lg sm:text-xl font-heading font-semibold">
+                            <a href="{{ .Site.BaseURL }}" class="flex">
+                                <span class="text-current dancing-script">sri</span>
+                                <span class="text-warm-brown">.</span>
+                            </a>
+                        </div>
+                        <!-- Desktop Navigation -->
+                        <nav class="hidden md:block">
+                            <ul class="flex items-center space-x-6 lg:space-x-8">
+                                {{ range .Site.Menus.main }}
+                                {{ $isActive := eq .URL $.Page.RelPermalink }}
+                                <li>
+                                    <a href="{{ .URL }}" class="relative py-2 px-3 text-sm font-medium transition-colors duration-200 hover:text-warm-brown focus:text-warm-brown {{ if $isActive }}text-warm-brown{{ else }}text-current{{ end }}">
+                                        {{ .Name }}
+                                        {{ if $isActive }}
+                                        <span class="absolute bottom-0 left-0 w-full h-0.5 bg-warm-brown" aria-hidden="true"></span>
+                                        {{ end }}
+                                    </a>
+                                </li>
+                                {{ end }}
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <!-- Theme Toggle -->
+                        <button onclick="toggleTheme()" class="relative p-2 rounded-lg transition-colors duration-200 hover:bg-neutral-gray/10 focus:bg-neutral-gray/10" aria-label="Toggle theme" role="switch">
+                            <div class="relative w-5 h-5">
+                                <svg class="absolute inset-0 w-5 h-5 transition-all duration-200 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="5"></circle>
+                                    <path d="m12 1 0 6m0 10 0 6M4.22 4.22l4.24 4.24m8.48 8.48 4.24 4.24M1 12l6 0m10 0 6 0M4.22 19.78l4.24-4.24m8.48-8.48 4.24-4.24"></path>
+                                </svg>
+
+                                <svg class="absolute inset-0 w-5 h-5 transition-all duration-200 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                                </svg>
+                            </div>
+                        </button>
+
+                        <!-- Mobile Menu Button -->
+                        <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-neutral-gray/10 focus:bg-neutral-gray/10 transition-colors duration-200" aria-label="Toggle mobile menu">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                <path id="close-icon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Navigation -->
+                <div id="mobile-menu" class="md:hidden mt-4 pt-4 border-t border-neutral-gray/20 hidden">
+                    <nav>
+                        <ul class="flex flex-col space-y-2">
+                            {{ range .Site.Menus.main }}
+                            {{ $isActive := $.IsMenuCurrent "main" . }}
+                            <li>
+                                <a href="{{ .URL }}" class="relative py-2 px-3 text-sm font-medium transition-colors duration-200 hover:text-warm-brown focus:text-warm-brown block w-full text-left {{ if $isActive }}text-warm-brown{{ else }}text-current{{ end }}">
+                                    {{ .Name }}
+                                    {{ if $isActive }}
+                                    <span class="absolute left-0 top-0 bottom-0 w-1 bg-warm-brown" aria-hidden="true"></span>
+                                    {{ end }}
+                                </a>
+                            </li>
+                            {{ end }}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1">
+            {{ block "main" . }}{{ end }}
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-light-bg dark:bg-dark-bg border-t border-neutral-gray/20 py-8 sm:py-10 lg:py-12">
+            <div class="container mx-auto px-4 sm:px-6">
+                <div class="flex flex-col items-center space-y-4 sm:space-y-6">
+                    <div class="flex items-center space-x-4 sm:space-x-6">
+                        <a href="https://www.linkedin.com/in/sripalideb" target="_blank" rel="noopener noreferrer" class="p-2 sm:p-3 text-neutral-gray dark:text-neutral-gray-light hover:text-warm-brown focus:text-warm-brown transition-colors duration-200 rounded-lg hover:bg-warm-brown/10 focus:bg-warm-brown/10" aria-label="Visit LinkedIn profile">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                            </svg>
+                        </a>
+                        <a href="https://sripalideb.medium.com" target="_blank" rel="noopener noreferrer" class="p-2 sm:p-3 text-neutral-gray dark:text-neutral-gray-light hover:text-warm-brown focus:text-warm-brown transition-colors duration-200 rounded-lg hover:bg-warm-brown/10 focus:bg-warm-brown/10" aria-label="Visit Medium profile">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M0 0v24h24V0H0zm19.5 7.5l-.868.83a.262.262 0 00-.1.25v7.84c0 .1.037.2.1.25l.85.83v.18H14v-.18l.88-.85c.087-.087.087-.113.087-.25V9.68l-4.887 12.39h-.66L4.75 9.68v6.7c-.024.18.037.36.175.5l1.14 1.38v.18H2.5v-.18l1.14-1.38c.137-.14.2-.33.163-.52V8.6c.024-.16-.05-.32-.187-.425L2.5 7.5V7.32h4.46l3.45 7.57 3.037-7.57H19.5v.18z" />
+                            </svg>
+                        </a>
+                        <a href="https://github.com/sripalideb" target="_blank" rel="noopener noreferrer" class="p-2 sm:p-3 text-neutral-gray dark:text-neutral-gray-light hover:text-warm-brown focus:text-warm-brown transition-colors duration-200 rounded-lg hover:bg-warm-brown/10 focus:bg-warm-brown/10" aria-label="Visit GitHub profile">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.207 11.387.6.113.82-.263.82-.582 0-.288-.012-1.243-.018-2.25-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.082-.73.082-.73 1.205.082 1.84 1.237 1.84 1.237 1.07 1.835 2.807 1.304 3.492.997.108-.774.418-1.304.762-1.604-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.468-2.382 1.236-3.22-.124-.303-.536-1.523.118-3.176 0 0 1.008-.322 3.3 1.23a11.5 11.5 0 013.003-.404c1.02.004 2.047.138 3.003.404 2.29-1.552 3.297-1.23 3.297-1.23.656 1.653.244 2.873.12 3.176.77.838 1.235 1.91 1.235 3.22 0 4.61-2.803 5.628-5.475 5.922.43.37.823 1.102.823 2.222 0 1.604-.014 2.896-.014 3.286 0 .321.218.699.825.58C20.565 21.796 24 17.297 24 12c0-6.63-5.37-12-12-12z" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="text-xs sm:text-sm text-neutral-gray dark:text-neutral-gray-light">
+                            © {{ now.Format "2006" }} Sri. All rights reserved.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            const closeIcon = document.getElementById('close-icon');
+
+            menu.classList.toggle('hidden');
+            menuIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        }
+    </script>
+</body>
+
+</html>

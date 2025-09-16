@@ -1,0 +1,11 @@
+name = "Sri Theme"
+licenselink = "https://github.com/sripalideb/sri-theme/blob/main/LICENSE"
+description = "A clean, modern theme for product designers"
+homepage = "https://github.com/sripalideb/sri-theme"
+tags = ["design", "portfolio", "minimal"]
+features = ["responsive", "dark-mode"]
+min_version = "0.150.0"
+
+[author]
+  name = "Sri"
+  homepage = "https://sripalideb.github.io"

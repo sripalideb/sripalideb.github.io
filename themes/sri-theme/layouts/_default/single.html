@@ -1,0 +1,29 @@
+{{ define "main" }}
+<main class="py-12 sm:py-16 lg:py-20">
+  <div class="container mx-auto px-4 sm:px-6">
+    <div class="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+      <!-- Left hand image - hidden on mobile and tablet, visible on large screens -->
+      <div class="hidden lg:block flex-shrink-0">
+        <img src="/images/hand.png" alt="Decorative hand illustration" class="scale-x-[-1]">
+      </div>
+      
+      <!-- Main content -->
+      <div class="max-w-2xl mx-auto">
+        <header class="mb-8 sm:mb-10 lg:mb-12 text-center">
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold mb-4">
+            {{ .Title | lower }}
+          </h1>
+          <div class="prose prose-lg max-w-none text-neutral-gray dark:text-neutral-gray-light leading-relaxed">
+            {{ .Content }}
+          </div>
+        </header>
+      </div>
+      
+      <!-- Right hand image - hidden on mobile and tablet, visible on large screens -->
+      <div class="hidden lg:block flex-shrink-0">
+        <img src="/images/hand.png" alt="Decorative hand illustration">
+      </div>
+    </div>
+  </div>
+</main>
+{{ end }}
