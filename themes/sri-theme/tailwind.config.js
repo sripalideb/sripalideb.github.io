@@ -12,8 +12,8 @@ module.exports = {
       colors: {
         'warm-brown': '#B07A4A',
         'warm-brown-dark': '#C5936B',
-        'neutral-gray': '#6B7280', // Improved contrast from #4A4A4A
-        'neutral-gray-light': '#9CA3AF', // For better contrast in dark mode
+        'neutral-gray': '#374151', // Improved contrast (gray-700)
+        'neutral-gray-light': '#D1D5DB', // Improved contrast for dark mode (gray-300)
         'light-bg': '#FFFFFF',
         'light-text': '#0B0B0B',
         'dark-bg': '#0B0B0B',

@@ -1,0 +1,47 @@
+{{ define "main" }}
+<main class="py-12 sm:py-16 lg:py-20">
+    <div class="container mx-auto px-4 sm:px-6">
+        <div class="max-w-3xl mx-auto">
+            <header class="mb-10 sm:mb-14 text-center">
+                <div class="mb-4 text-sm font-medium text-warm-brown uppercase tracking-wider">
+                    {{ .Date.Format "January 2, 2006" }}
+                    {{ if .Params.readTime }} • {{ .Params.readTime }} min read{{ else if .ReadingTime }} • {{
+                    .ReadingTime }} min read{{ end }}
+                </div>
+
+                <h1
+                    class="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold mb-6 text-light-text dark:text-dark-text leading-tight">
+                    {{ .Title }}
+                </h1>
+
+                {{ if .Params.tags }}
+                <div class="flex flex-wrap justify-center gap-2">
+                    {{ range .Params.tags }}
+                    <span
+                        class="px-3 py-1 bg-neutral-gray/5 dark:bg-neutral-gray/10 text-neutral-gray dark:text-neutral-gray-light text-sm rounded-full">
+                        #{{ . }}
+                    </span>
+                    {{ end }}
+                </div>
+                {{ end }}
+            </header>
+
+            <article
+                class="prose prose-lg dark:prose-invert max-w-none mx-auto text-neutral-gray dark:text-neutral-gray-light prose-headings:font-heading prose-headings:font-bold prose-headings:text-light-text dark:prose-headings:text-dark-text prose-a:text-warm-brown hover:prose-a:text-warm-brown-dark prose-img:rounded-lg">
+                {{ .Content }}
+            </article>
+
+            <div class="mt-12 pt-8 border-t border-neutral-gray/20 text-center">
+                <a href="/blog/"
+                    class="inline-flex items-center text-warm-brown hover:text-warm-brown-dark font-medium transition-colors duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+{{ end }}

@@ -43,11 +43,11 @@
             localStorage.setItem('theme', newTheme);
         }
 
-        // Load saved theme
-        document.addEventListener('DOMContentLoaded', function () {
+        // Load saved theme immediately to prevent flash
+        (function() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.classList.add(savedTheme);
-        });
+        })();
     </script>
 </head>
 

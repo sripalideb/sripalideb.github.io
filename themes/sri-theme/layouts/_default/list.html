@@ -9,105 +9,185 @@
     </header>
 
     {{ if eq .Section "blog" }}
-      <!-- Blog posts -->
-      <div class="max-w-4xl space-y-6 sm:space-y-8">
-        {{ range .Pages }}
-        <article class="group block bg-light-bg dark:bg-dark-bg border border-neutral-gray/20 rounded-lg p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] focus:scale-[1.01] focus:shadow-lg">
-          <div class="flex items-start justify-between mb-3">
-            <time datetime="{{ .Date.Format "2006-01-02" }}" class="text-xs sm:text-sm text-neutral-gray dark:text-neutral-gray-light">
-              {{ .Date.Format "January 2, 2006" }}
-            </time>
-            {{ if .Params.readTime }}
-            <span class="text-xs sm:text-sm text-neutral-gray dark:text-neutral-gray-light">
-              {{ .Params.readTime }} min read
-            </span>
-            {{ end }}
-          </div>
-          
-          <h2 class="text-lg sm:text-xl font-heading font-semibold mb-3 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
+    <!-- Blog posts -->
+    {{ $tags := slice }}
+    {{ range .Pages }}
+    {{ if .Params.tags }}
+    {{ $tags = $tags | append .Params.tags }}
+    {{ end }}
+    {{ end }}
+    {{ $uniqueTags := $tags | uniq | sort }}
+
+    {{ if gt (len $uniqueTags) 0 }}
+    <div class="mb-8 flex flex-wrap justify-center gap-2" id="tag-filters">
+      <button data-filter="all"
+        class="active filter-btn px-4 py-1.5 bg-warm-brown text-white rounded-full text-sm font-medium transition-all duration-200 hover:scale-105 shadow-sm">
+        All
+      </button>
+      {{ range $uniqueTags }}
+      <button data-filter="{{ . | urlize }}"
+        class="filter-btn px-4 py-1.5 bg-neutral-gray/5 hover:bg-neutral-gray/10 dark:bg-neutral-gray/10 dark:hover:bg-neutral-gray/20 text-neutral-gray dark:text-neutral-gray-light rounded-full text-sm font-medium transition-all duration-200 hover:scale-105">
+        {{ . }}
+      </button>
+      {{ end }}
+    </div>
+    {{ end }}
+
+    <div class="max-w-4xl space-y-6 sm:space-y-8" id="posts-container">
+      {{ range .Pages }}
+        <article class="post-item group relative block bg-light-bg dark:bg-dark-bg border border-neutral-gray/20 rounded-lg p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] focus:scale-[1.01] focus:shadow-lg" data-tags="{{ range .Params.tags }}{{ . | urlize }} {{ end }}">
+        <div class="flex items-start justify-between mb-3">
+          <time datetime="{{ .Date.Format "2006-01-02" }}" class="text-xs sm:text-sm text-neutral-gray dark:text-neutral-gray-light">
+            {{ .Date.Format "January 2, 2006" }}
+          </time>
+          {{ if .Params.readTime }}
+          <span class="text-xs sm:text-sm text-neutral-gray dark:text-neutral-gray-light">
+            {{ .Params.readTime }} min read
+          </span>
+          {{ end }}
+        </div>
+
+        <h2 class="text-lg sm:text-xl font-heading font-semibold mb-3 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
+            <a href="{{ .Permalink }}" class="no-underline before:absolute before:inset-0">{{ .Title }}</a>
+        </h2>
+
+        <p class="text-neutral-gray dark:text-neutral-gray-light text-sm sm:text-base mb-4 leading-relaxed">
+          {{ .Summary }}
+        </p>
+
+        {{ if .Params.tags }}
+        <div class="flex flex-wrap gap-1.5 sm:gap-2">
+          {{ range .Params.tags }}
+          <span class="px-2 py-1 bg-warm-brown/10 text-warm-brown text-xs font-medium rounded-full">
+            {{ . }}
+          </span>
+          {{ end }}
+        </div>
+        {{ end }}
+      </article>
+      {{ end }}
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const posts = document.querySelectorAll('.post-item');
+
+        // Check for URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTag = urlParams.get('tag');
+
+        if (activeTag) {
+          filterPosts(activeTag);
+          updateActiveButton(activeTag);
+        }
+
+        filterButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            const filter = button.getAttribute('data-filter');
+            filterPosts(filter);
+            updateActiveButton(filter);
+
+            // Update URL without reload
+            const newUrl = filter === 'all'
+              ? window.location.pathname
+              : `${window.location.pathname}?tag=${filter}`;
+            window.history.pushState({ path: newUrl }, '', newUrl);
+          });
+        });
+
+        function filterPosts(filter) {
+          posts.forEach(post => {
+            const tags = post.getAttribute('data-tags').split(' ');
+            if (filter === 'all' || tags.includes(filter)) {
+              post.style.display = 'block';
+              // Add a small animation effect
+              post.style.opacity = '0';
+              setTimeout(() => post.style.opacity = '1', 50);
+            } else {
+              post.style.display = 'none';
+            }
+          });
+        }
+
+        function updateActiveButton(activeFilter) {
+          filterButtons.forEach(btn => {
+            const isActive = btn.getAttribute('data-filter') === activeFilter;
+            if (isActive) {
+              btn.classList.add('bg-warm-brown', 'text-white', 'shadow-sm');
+              btn.classList.remove('bg-neutral-gray/5', 'text-neutral-gray', 'dark:text-neutral-gray-light');
+            } else {
+              btn.classList.remove('bg-warm-brown', 'text-white', 'shadow-sm');
+              btn.classList.add('bg-neutral-gray/5', 'text-neutral-gray', 'dark:text-neutral-gray-light');
+            }
+          });
+        }
+      });
+    </script>
+    {{ else if eq .Section "projects" }}
+    <!-- Projects grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      {{ range .Pages }}
+      <article class="group bg-light-bg dark:bg-dark-bg border border-neutral-gray/20 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:scale-[1.02] focus:shadow-lg">
+        {{ if .Params.image }}
+        <div class="aspect-video bg-neutral-gray/10 overflow-hidden">
+            <img src="{{ .Params.image }}" alt="{{ .Title }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 group-focus:scale-105">
+        </div>
+        {{ end }}
+
+        <div class="p-4 sm:p-6">
+          <h2 class="text-base sm:text-lg font-heading font-semibold mb-2 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
             <a href="{{ .Permalink }}" class="no-underline">{{ .Title }}</a>
           </h2>
-          
-          <p class="text-neutral-gray dark:text-neutral-gray-light text-sm sm:text-base mb-4 leading-relaxed">
+
+          <p class="text-neutral-gray dark:text-neutral-gray-light text-sm sm:text-base mb-3 sm:mb-4 leading-relaxed">
             {{ .Summary }}
           </p>
-          
+
           {{ if .Params.tags }}
           <div class="flex flex-wrap gap-1.5 sm:gap-2">
             {{ range .Params.tags }}
-            <span class="px-2 py-1 bg-warm-brown/10 text-warm-brown text-xs font-medium rounded-full">
+            <span class="px-2 sm:px-3 py-1 bg-warm-brown/10 text-warm-brown text-xs font-medium rounded-full">
               {{ . }}
             </span>
             {{ end }}
           </div>
           {{ end }}
-        </article>
-        {{ end }}
-      </div>
-    {{ else if eq .Section "projects" }}
-      <!-- Projects grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-        {{ range .Pages }}
-        <article class="group bg-light-bg dark:bg-dark-bg border border-neutral-gray/20 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:scale-[1.02] focus:shadow-lg">
-          {{ if .Params.image }}
-          <div class="aspect-video bg-neutral-gray/10 overflow-hidden">
-            <img src="{{ .Params.image }}" alt="{{ .Title }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 group-focus:scale-105">
-          </div>
-          {{ end }}
-          
-          <div class="p-4 sm:p-6">
-            <h2 class="text-base sm:text-lg font-heading font-semibold mb-2 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
-              <a href="{{ .Permalink }}" class="no-underline">{{ .Title }}</a>
-            </h2>
-            
-            <p class="text-neutral-gray dark:text-neutral-gray-light text-sm sm:text-base mb-3 sm:mb-4 leading-relaxed">
-              {{ .Summary }}
-            </p>
-            
-            {{ if .Params.tags }}
-            <div class="flex flex-wrap gap-1.5 sm:gap-2">
-              {{ range .Params.tags }}
-              <span class="px-2 sm:px-3 py-1 bg-warm-brown/10 text-warm-brown text-xs font-medium rounded-full">
-                {{ . }}
-              </span>
-              {{ end }}
-            </div>
-            {{ end }}
-          </div>
-        </article>
-        {{ end }}
-      </div>
+        </div>
+      </article>
+      {{ end }}
+    </div>
     {{ else if eq .Section "resources" }}
-      <!-- Resources grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-        {{ range .Pages }}
-        <article class="group bg-light-bg dark:bg-dark-bg border border-neutral-gray/20 rounded-lg p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:scale-[1.02] focus:shadow-lg">
-          <div class="mb-4">
-            <h2 class="text-base sm:text-lg font-heading font-semibold mb-2 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
-              <a href="{{ .Params.url | default .Permalink }}" target="_blank" rel="noopener noreferrer" class="no-underline">{{ .Title }}</a>
-            </h2>
-            <p class="text-neutral-gray dark:text-neutral-gray-light text-sm sm:text-base mb-3 leading-relaxed">
-              {{ .Summary }}
-            </p>
-            {{ if .Params.category }}
-            <span class="text-xs text-warm-brown font-medium bg-warm-brown/10 px-2 py-1 rounded-full">
-              {{ .Params.category }}
-            </span>
-            {{ end }}
-          </div>
-          
-          {{ if .Params.tags }}
-          <div class="flex flex-wrap gap-1.5 sm:gap-2">
-            {{ range .Params.tags }}
-            <span class="px-2 py-1 bg-neutral-gray/10 text-neutral-gray dark:text-neutral-gray-light text-xs rounded-full">
-              {{ . }}
-            </span>
-            {{ end }}
-          </div>
+    <!-- Resources grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      {{ range .Pages }}
+      <article class="group bg-light-bg dark:bg-dark-bg border border-neutral-gray/20 rounded-lg p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:scale-[1.02] focus:shadow-lg">
+        <div class="mb-4">
+          <h2 class="text-base sm:text-lg font-heading font-semibold mb-2 group-hover:text-warm-brown group-focus:text-warm-brown transition-colors duration-200">
+            <a href="{{ .Params.url | default .Permalink }}" target="_blank" rel="noopener noreferrer" class="no-underline">{{ .Title }}</a>
+          </h2>
+          <p class="text-neutral-gray dark:text-neutral-gray-light text-sm sm:text-base mb-3 leading-relaxed">
+            {{ .Summary }}
+          </p>
+          {{ if .Params.category }}
+          <span class="text-xs text-warm-brown font-medium bg-warm-brown/10 px-2 py-1 rounded-full">
+            {{ .Params.category }}
+          </span>
           {{ end }}
-        </article>
+        </div>
+
+        {{ if .Params.tags }}
+        <div class="flex flex-wrap gap-1.5 sm:gap-2">
+          {{ range .Params.tags }}
+          <span class="px-2 py-1 bg-neutral-gray/10 text-neutral-gray dark:text-neutral-gray-light text-xs rounded-full">
+            {{ . }}
+          </span>
+          {{ end }}
+        </div>
         {{ end }}
-      </div>
+      </article>
+      {{ end }}
+    </div>
     {{ end }}
 
     {{ if eq (len .Pages) 0 }}

@@ -76,29 +76,3 @@ content/
 └── resources/       # Curated resources
     └── _index.md    # Resources listing page
 ```
-
-## Theme Customization
-
-The theme is located in `themes/sri-theme/` and includes:
-- Responsive layouts
-- Dark mode support
-- Tailwind CSS styling
-- Custom components
-
-## Benefits over React Version
-
-1. **Better Content Management**: Easy to add/edit content without code changes
-2. **SEO Optimized**: Static HTML generation for better search engine indexing
-3. **Faster Loading**: Pre-built static files load faster
-4. **GitHub Pages Native**: No complex build processes needed
-5. **Content Versioning**: All content is versioned with Git
-6. **Easy Blogging**: Markdown-based blog posts with front matter
-7. **No JavaScript Required**: Works without JavaScript (progressive enhancement)
-
-## Migration from React
-
-The Hugo version maintains the same design and functionality as the React version but with:
-- Static site generation instead of client-side rendering
-- Markdown content instead of hardcoded components
-- Hugo templating instead of React components
-- Better performance and SEO
