@@ -1,0 +1,25 @@
+{{ define "main" }}
+<main class="py-12 sm:py-16 lg:py-20">
+    <div class="container mx-auto px-4 sm:px-6">
+        <header class="mb-8 sm:mb-10 lg:mb-12 text-center">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold mb-4">{{ .Title | lower }}</h1>
+            <p
+                class="text-base sm:text-lg lg:text-xl text-neutral-gray dark:text-neutral-gray-light max-w-2xl mx-auto leading-relaxed">
+                explore all topics and categories.
+            </p>
+        </header>
+
+        <div class="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
+            {{ range .Data.Terms.ByCount }}
+            <a href="{{ .Page.Permalink }}"
+                class="group flex items-center gap-2 px-5 py-2.5 bg-neutral-gray/5 hover:bg-warm-brown dark:bg-neutral-gray/10 dark:hover:bg-warm-brown text-neutral-gray dark:text-neutral-gray-light hover:text-white dark:hover:text-white rounded-full transition-all duration-300 hover:shadow-md hover:scale-105">
+                <span class="text-sm sm:text-base font-medium">#{{ .Page.Title }}</span>
+                <span
+                    class="text-xs bg-black/10 dark:bg-white/10 px-2 py-0.5 rounded-full group-hover:bg-white/20 group-hover:text-white">{{
+                    .Count }}</span>
+            </a>
+            {{ end }}
+        </div>
+    </div>
+</main>
+{{ end }}

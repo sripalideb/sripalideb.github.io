@@ -17,10 +17,9 @@
                 {{ if .Params.tags }}
                 <div class="flex flex-wrap justify-center gap-2">
                     {{ range .Params.tags }}
-                    <span
-                        class="px-3 py-1 bg-neutral-gray/5 dark:bg-neutral-gray/10 text-neutral-gray dark:text-neutral-gray-light text-sm rounded-full">
+                    <a href="/tags/{{ . | urlize }}" class="px-3 py-1 bg-neutral-gray/5 dark:bg-neutral-gray/10 text-neutral-gray dark:text-neutral-gray-light text-sm rounded-full hover:bg-warm-brown hover:text-white transition-colors duration-200">
                         #{{ . }}
-                    </span>
+                    </a>
                     {{ end }}
                 </div>
                 {{ end }}

@@ -1,0 +1,358 @@
+{{ $uniqueID := substr (md5 (printf "%s-%d" (.Get 0) (now.UnixNano))) 0 8 }}
+{{ $pdfUrl := .Get 0 }}
+
+<!-- Ensure PDF.js is loaded only once -->
+<script>
+    if (!window.pdfjsLib) {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        script.async = true;
+        script.onload = () => {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            document.dispatchEvent(new CustomEvent('pdfjsLoadingComplete'));
+        };
+        document.head.appendChild(script);
+    }
+</script>
+
+<div id="pdf-wrapper-{{ $uniqueID }}"
+    class="pdf-wrapper w-full my-8 group rounded-xl border border-neutral-gray/20 dark:border-neutral-gray-light/20 overflow-hidden shadow-sm transition-shadow hover:shadow-md"
+    tabindex="0">
+    <div class="relative bg-neutral-gray/5 dark:bg-neutral-gray/10">
+        <!-- Loading Spinner -->
+        <div id="loader-{{ $uniqueID }}"
+            class="absolute inset-0 z-10 flex items-center justify-center bg-light-bg/80 dark:bg-dark-bg/80 backdrop-blur-sm">
+            <div class="flex flex-col items-center gap-3">
+                <svg class="animate-spin h-8 w-8 text-warm-brown" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+                <span class="text-xs font-medium text-neutral-gray uppercase tracking-wider">Loading PDF...</span>
+            </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="relative w-full overflow-hidden flex justify-center bg-gray-50 dark:bg-gray-900"
+            style="min-height: 400px;">
+            <canvas id="canvas-{{ $uniqueID }}" class="block max-w-full h-auto shadow-lg my-4"></canvas>
+        </div>
+    </div>
+
+    <!-- Toolbar (Bottom loop) -->
+    <div
+        class="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 border-t border-neutral-gray/20 dark:border-neutral-gray-light/20">
+
+        <div class="flex items-center gap-4">
+            <span class="text-sm font-medium text-neutral-gray dark:text-neutral-gray-light">
+                Page <span id="page-num-{{ $uniqueID }}" class="font-bold text-warm-brown">1</span> of <span
+                    id="page-count-{{ $uniqueID }}">--</span>
+            </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button id="prev-{{ $uniqueID }}"
+                class="p-2 rounded-lg hover:bg-neutral-gray/10 text-neutral-gray dark:text-neutral-gray-light transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                aria-label="Previous Page">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                    </path>
+                </svg>
+            </button>
+
+            <button id="next-{{ $uniqueID }}"
+                class="p-2 rounded-lg hover:bg-neutral-gray/10 text-neutral-gray dark:text-neutral-gray-light transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                aria-label="Next Page">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+
+            <div class="w-px h-6 bg-neutral-gray/20 dark:bg-neutral-gray-light/20 mx-2"></div>
+
+            <button id="fullscreen-btn-{{ $uniqueID }}"
+                class="p-2 rounded-lg hover:bg-warm-brown/10 text-neutral-gray dark:text-neutral-gray-light hover:text-warm-brown transition-colors"
+                aria-label="Fullscreen">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Fullscreen Modal -->
+<div id="modal-{{ $uniqueID }}"
+    class="fixed inset-0 z-[100] bg-black/95 hidden opacity-0 transition-opacity duration-300 flex flex-col pt-4 outline-none"
+    tabindex="-1">
+
+    <!-- Modal Toolbar -->
+    <div class="absolute top-0 left-0 w-full p-4 flex justify-between items-center z-20">
+        <div class="text-white/70 text-sm font-medium ml-2">{{ $pdfUrl }}</div>
+        <button id="close-modal-{{ $uniqueID }}"
+            class="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Modal Canvas Area -->
+    <div class="flex-1 flex items-center justify-center overflow-auto p-4 md:p-8">
+        <canvas id="modal-canvas-{{ $uniqueID }}"
+            class="max-w-full max-h-full shadow-2xl scale-95 transition-transform duration-300"></canvas>
+    </div>
+
+    <!-- Modal Footer Controls -->
+    <div class="flex justify-center pb-8 z-20">
+        <div
+            class="flex items-center gap-6 px-8 py-3 bg-white/10 backdrop-blur-md rounded-full text-white border border-white/10 shadow-2xl">
+            <button id="modal-prev-{{ $uniqueID }}" class="hover:text-warm-brown transition-colors"><svg class="w-8 h-8"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg></button>
+            <span class="text-xl font-bold font-heading tabular-nums"><span id="modal-page-num-{{ $uniqueID }}">1</span>
+                / <span id="modal-page-count-{{ $uniqueID }}">--</span></span>
+            <button id="modal-next-{{ $uniqueID }}" class="hover:text-warm-brown transition-colors"><svg class="w-8 h-8"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const url = '{{ $pdfUrl }}';
+        const uniqueId = '{{ $uniqueID }}';
+
+        let pdfDoc = null,
+            pageNum = 1,
+            pageRendering = false,
+            pageNumPending = null,
+            scale = 1.5, // Base scale for inline
+            modalScale = 2.0; // Higher quality for modal
+
+        // Elements
+        const canvas = document.getElementById(`canvas-${uniqueId}`);
+        const ctx = canvas.getContext('2d');
+        const modalCanvas = document.getElementById(`modal-canvas-${uniqueId}`);
+        const modalCtx = modalCanvas.getContext('2d');
+        const loader = document.getElementById(`loader-${uniqueId}`);
+
+        const pageNumSpans = [document.getElementById(`page-num-${uniqueId}`), document.getElementById(`modal-page-num-${uniqueId}`)];
+        const pageCountSpans = [document.getElementById(`page-count-${uniqueId}`), document.getElementById(`modal-page-count-${uniqueId}`)];
+
+        const modal = document.getElementById(`modal-${uniqueId}`);
+        // Move modal to body to obtain a valid stacking context for fixed positioning
+        document.body.appendChild(modal);
+        let isModalOpen = false;
+
+        function initPDF() {
+            if (!window.pdfjsLib) {
+                // If loaded via async, wait for event
+                document.addEventListener('pdfjsLoadingComplete', initPDF);
+                return;
+            }
+
+            const loadingTask = pdfjsLib.getDocument(url);
+            loadingTask.promise.then(function (pdf) {
+                pdfDoc = pdf;
+
+                // Update total page counts
+                pageCountSpans.forEach(span => span.textContent = pdf.numPages);
+
+                loader.classList.add('hidden');
+
+                // Render first page
+                renderPage(pageNum);
+            }, function (reason) {
+                // PDF loading error
+                console.error('Error: ' + reason);
+                loader.innerHTML = `<p class="text-red-500 font-bold">Error loading PDF</p><a href="${url}" class="underline mt-2 text-sm">Download Instead</a>`;
+            });
+        }
+
+        // Check if library already exists
+        if (window.pdfjsLib) {
+            initPDF();
+        } else {
+            document.addEventListener('pdfjsLoadingComplete', initPDF);
+        }
+
+        /**
+         * Render pages
+         */
+        function renderPage(num) {
+            pageRendering = true;
+
+            // Render Inline
+            pdfDoc.getPage(num).then(function (page) {
+                const viewport = page.getViewport({ scale: scale });
+
+                // Dynamic scaling for inline view to fit container
+                const containerWidth = document.getElementById(`pdf-wrapper-${uniqueId}`).clientWidth;
+                // If viewport is wider than container, scale down. 
+                // We keep a minimum clarity scale though.
+                let renderScale = scale;
+                if (viewport.width > containerWidth) {
+                    renderScale = scale * (containerWidth / viewport.width);
+                }
+
+                const renderViewport = page.getViewport({ scale: renderScale });
+
+                canvas.height = renderViewport.height;
+                canvas.width = renderViewport.width;
+
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: renderViewport
+                };
+
+                const renderTask = page.render(renderContext);
+
+                // Wait for render to finish
+                renderTask.promise.then(function () {
+                    pageRendering = false;
+
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+            });
+
+            // Update page counters
+            pageNumSpans.forEach(span => span.textContent = num);
+            updateButtons();
+
+            // Verify if modal is open, render there too
+            if (isModalOpen) {
+                renderModalPage(num);
+            }
+        }
+
+        function renderModalPage(num) {
+            pdfDoc.getPage(num).then(function (page) {
+                // High res for modal
+                const viewport = page.getViewport({ scale: modalScale });
+
+                // Check max dimensions of window to ensure it fits? 
+                // Actually canvas scaling in CSS 'max-w-full max-h-full' handles the visual fit,
+                // but we want high pixel density for the source.
+
+                modalCanvas.height = viewport.height;
+                modalCanvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: modalCtx,
+                    viewport: viewport
+                };
+                page.render(renderContext);
+            });
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function onPrevPage() {
+            if (pageNum <= 1) return;
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        function onNextPage() {
+            if (pageNum >= pdfDoc.numPages) return;
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+
+        function updateButtons() {
+            const isFirst = pageNum <= 1;
+            const isLast = pdfDoc && pageNum >= pdfDoc.numPages;
+
+            [`prev-${uniqueId}`, `modal-prev-${uniqueId}`].forEach(id => {
+                document.getElementById(id).disabled = isFirst;
+                document.getElementById(id).classList.toggle('opacity-50', isFirst);
+            });
+
+            [`next-${uniqueId}`, `modal-next-${uniqueId}`].forEach(id => {
+                document.getElementById(id).disabled = isLast;
+                document.getElementById(id).classList.toggle('opacity-50', isLast);
+            });
+        }
+
+        /**
+         * Navigation Bindings
+         */
+        document.getElementById(`prev-${uniqueId}`).addEventListener('click', onPrevPage);
+        document.getElementById(`next-${uniqueId}`).addEventListener('click', onNextPage);
+        document.getElementById(`modal-prev-${uniqueId}`).addEventListener('click', onPrevPage);
+        document.getElementById(`modal-next-${uniqueId}`).addEventListener('click', onNextPage);
+
+        // Keyboard Support
+        window.addEventListener('keydown', (e) => {
+            // Only capture keys if:
+            // 1. Modal is open OR
+            // 2. The inline wrapper has focus
+            const wrapper = document.getElementById(`pdf-wrapper-${uniqueId}`);
+            if (!isModalOpen && document.activeElement !== wrapper) return;
+
+            if (e.key === 'ArrowLeft') {
+                onPrevPage();
+            } else if (e.key === 'ArrowRight') {
+                onNextPage();
+            } else if (e.key === 'Escape' && isModalOpen) {
+                closeModal();
+            }
+        });
+
+        // Modal Logic
+        function openModal() {
+            isModalOpen = true;
+            modal.classList.remove('hidden');
+            // Small timeout to allow transition
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('canvas').classList.remove('scale-95');
+                modal.querySelector('canvas').classList.add('scale-100');
+            }, 10);
+
+            modal.focus();
+            renderModalPage(pageNum);
+            document.body.style.overflow = 'hidden'; // Prevent scrolling bg
+        }
+
+        function closeModal() {
+            isModalOpen = false;
+            modal.classList.add('opacity-0');
+            modal.querySelector('canvas').classList.add('scale-95');
+            modal.querySelector('canvas').classList.remove('scale-100');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById(`fullscreen-btn-${uniqueId}`).addEventListener('click', openModal);
+        document.getElementById(`close-modal-${uniqueId}`).addEventListener('click', closeModal);
+
+        // Click outside canvas to close?
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal || e.target.classList.contains('flex-1')) {
+                closeModal();
+            }
+        });
+
+    })();
+</script>
