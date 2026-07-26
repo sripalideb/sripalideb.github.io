@@ -1,7 +1,7 @@
 baseURL = 'https://sripalideb.github.io/'
 languageCode = 'en-us'
 title = 'Sri - Product Designer'
-theme = 'sri-theme'
+theme = 'kathak-baithak'
 
 [params]
   description = "Product designer crafting meaningful digital experiences. Projects & insights."

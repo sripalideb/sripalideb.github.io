@@ -1,0 +1,39 @@
+{{ define "main" }}
+<section class="hero">
+  <div class="wrap wrap-narrow">
+    <p class="hero-script">sri<span class="brand-dot">.</span></p>
+
+    <h1>hi! i'm sri &mdash; <span class="squiggle">a small corner</span> for big-hearted thinkers</h1>
+
+    <p class="lede">
+      i design, dance, build, and play with ai, and this site is my little
+      diary where i yap about it all.
+    </p>
+
+    <p class="hero-note" aria-hidden="true">riyaaz [री-याज़] &mdash; daily practice. showing up, even on the slow days.</p>
+  </div>
+</section>
+
+<section class="wander">
+  <div class="wrap wrap-narrow">
+    <h2 class="wander-title">where do you want to wander?</h2>
+    <ul class="wander-list">
+      {{ range .Site.Menus.main }}
+      <li>
+        <a href="{{ .URL }}">
+          <span class="wander-arrow" aria-hidden="true">╰┈➤</span>
+          <span class="wander-name">{{ .Name }}</span>
+          <span class="wander-hint">
+            {{ if eq .Name "about" }}the person holding the pen{{ end }}
+            {{ if eq .Name "blog" }}notes from practice, wins and stumbles{{ end }}
+            {{ if eq .Name "projects" }}things i've made, half-finished and whole{{ end }}
+            {{ if eq .Name "resources" }}my little shelf of good finds{{ end }}
+            {{ if eq .Name "contact" }}say hi, i always write back{{ end }}
+          </span>
+        </a>
+      </li>
+      {{ end }}
+    </ul>
+  </div>
+</section>
+{{ end }}

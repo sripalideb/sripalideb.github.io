@@ -1,0 +1,120 @@
+{{ define "main" }}
+<section class="page-head">
+  <div class="wrap">
+    <h1>{{ .Title | lower }}</h1>
+    {{ with .Description }}<p class="page-desc">{{ . }}</p>{{ end }}
+  </div>
+</section>
+
+<div class="wrap">
+  {{ if or (eq .Section "blog") (eq .Kind "term") }}
+
+  {{ $tags := slice }}
+  {{ range .Pages }}{{ with .Params.tags }}{{ $tags = $tags | append . }}{{ end }}{{ end }}
+  {{ $uniqueTags := $tags | uniq | sort }}
+
+  {{ if gt (len $uniqueTags) 0 }}
+  <div class="filters" id="tag-filters">
+    <button data-filter="all" class="filter-btn is-active">all</button>
+    {{ range $uniqueTags }}
+    <button data-filter="{{ . | urlize }}" class="filter-btn">{{ . }}</button>
+    {{ end }}
+  </div>
+  {{ end }}
+
+  <div class="diary" id="posts-container">
+    {{ range .Pages }}
+    <article class="diary-entry post-item" data-tags="{{ range .Params.tags }}{{ . | urlize }} {{ end }}">
+      <div class="diary-margin">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">
+          <span class="diary-day">{{ .Date.Format "02" }}</span>
+          <span class="diary-month">{{ .Date.Format "Jan 2006" | lower }}</span>
+        </time>
+        {{ if .Params.readTime }}<span class="diary-read">{{ .Params.readTime }} min</span>{{ end }}
+      </div>
+      <div class="diary-body">
+        <h2><a href="{{ .Permalink }}" class="cover-link">{{ .Title }}</a></h2>
+        <p class="diary-summary">{{ .Summary }}</p>
+        {{ with .Params.tags }}
+        <div class="tag-row">
+          {{ range . }}<a href="/tags/{{ . | urlize }}" class="tag">{{ . }}</a>{{ end }}
+        </div>
+        {{ end }}
+      </div>
+    </article>
+    {{ end }}
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const buttons = document.querySelectorAll('.filter-btn');
+      const posts = document.querySelectorAll('.post-item');
+      const params = new URLSearchParams(window.location.search);
+      const activeTag = params.get('tag');
+      const isTermPage = {{ if eq .Kind "term" }}true{{ else }}false{{ end }};
+
+      if (activeTag) { filterPosts(activeTag); setActive(activeTag); }
+      else if (isTermPage) { setActive("{{ .Title | urlize }}"); }
+
+      buttons.forEach(btn => btn.addEventListener('click', () => {
+        const f = btn.getAttribute('data-filter');
+        filterPosts(f); setActive(f);
+        const url = f === 'all' ? window.location.pathname : `${window.location.pathname}?tag=${f}`;
+        window.history.pushState({ path: url }, '', url);
+      }));
+
+      function filterPosts(f) {
+        posts.forEach(p => {
+          const tags = p.getAttribute('data-tags').split(' ');
+          p.style.display = (f === 'all' || tags.includes(f)) ? '' : 'none';
+        });
+      }
+      function setActive(f) {
+        buttons.forEach(b => b.classList.toggle('is-active', b.getAttribute('data-filter') === f));
+      }
+    });
+  </script>
+
+  {{ else if eq .Section "projects" }}
+  <div class="card-grid">
+    {{ range .Pages }}
+    <article class="card">
+      <span class="tape" aria-hidden="true"></span>
+      {{ with .Params.image }}<div class="card-image"><img src="{{ . }}" alt="{{ $.Title }}"></div>{{ end }}
+      <div class="card-body">
+        <h2><a href="{{ .Permalink }}" class="cover-link">{{ .Title }}</a></h2>
+        <p>{{ .Summary }}</p>
+        {{ with .Params.tags }}
+        <div class="tag-row">{{ range . }}<a href="/tags/{{ . | urlize }}" class="tag">{{ . }}</a>{{ end }}</div>
+        {{ end }}
+      </div>
+    </article>
+    {{ end }}
+  </div>
+
+  {{ else if eq .Section "resources" }}
+  <div class="card-grid">
+    {{ range .Pages }}
+    <article class="card">
+      <span class="tape" aria-hidden="true"></span>
+      <div class="card-body">
+        <h2><a href="{{ .Params.url | default .Permalink }}" target="_blank" rel="noopener noreferrer" class="cover-link">╰┈➤ {{ .Title }}</a></h2>
+        <p>{{ .Summary }}</p>
+        {{ with .Params.category }}<span class="tag tag-solid">{{ . }}</span>{{ end }}
+        {{ with .Params.tags }}
+        <div class="tag-row">{{ range . }}<a href="/tags/{{ . | urlize }}" class="tag">{{ . }}</a>{{ end }}</div>
+        {{ end }}
+      </div>
+    </article>
+    {{ end }}
+  </div>
+  {{ end }}
+
+  {{ if eq (len .Pages) 0 }}
+  <div class="empty-state">
+    <p class="empty-script">shhh, riyaaz in progress</p>
+    <p>{{ if eq .Section "blog" }}cooking up something fun. stay tuned!!!!{{ else if eq .Section "projects" }}coming soon! new projects are being crafted behind the scenes.{{ else if eq .Section "resources" }}still growing… new resources will appear here soon.{{ end }}</p>
+  </div>
+  {{ end }}
+</div>
+{{ end }}

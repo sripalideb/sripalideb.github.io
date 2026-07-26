@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="{{ site.Language.Lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+    <meta name="author" content="{{ .Site.Params.author }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ .Permalink }}">
+    <meta property="og:title" content="{{ if .Title }}{{ .Title }}{{ else }}{{ .Site.Title }}{{ end }}">
+    <meta property="og:description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ .Permalink }}">
+    <meta property="twitter:title" content="{{ if .Title }}{{ .Title }} - {{ .Site.Title }}{{ else }}{{ .Site.Title }}{{ end }}">
+    <meta property="twitter:description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap" rel="stylesheet">
+
+    <title>{{ if .Title }}{{ .Title }} - {{ .Site.Title }}{{ else }}{{ .Site.Title }}{{ end }}</title>
+
+    <link rel="stylesheet" href="/css/mehfil.css">
+</head>
+
+<body>
+    <div class="curtain" aria-hidden="true"></div>
+
+    <header class="site-header">
+        <div class="wrap header-inner">
+            <a href="{{ .Site.BaseURL }}" class="brand">sri<span class="brand-dot">.</span></a>
+
+            <nav class="site-nav" aria-label="Main">
+                <ul>
+                    {{ range .Site.Menus.main }}
+                    {{ $isActive := eq .URL $.Page.RelPermalink }}
+                    <li><a href="{{ .URL }}" {{ if $isActive }}class="is-active" aria-current="page"{{ end }}>{{ .Name }}</a></li>
+                    {{ end }}
+                </ul>
+            </nav>
+
+            <button class="menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+
+        <nav id="mobile-menu" class="mobile-nav" hidden aria-label="Mobile">
+            <ul>
+                {{ range .Site.Menus.main }}
+                {{ $isActive := eq .URL $.Page.RelPermalink }}
+                <li><a href="{{ .URL }}" {{ if $isActive }}class="is-active" aria-current="page"{{ end }}>{{ .Name }}</a></li>
+                {{ end }}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {{ block "main" . }}{{ end }}
+    </main>
+
+    <footer class="site-footer">
+        <div class="wrap">
+            <div class="taal" aria-hidden="true">
+                <!-- teentaal: 16 beats. sam on 1, taali on 5 & 13, khali on 9 -->
+                <span class="sam"></span><span></span><span></span><span></span><span class="taali"></span><span></span><span></span><span></span><span class="khali"></span><span></span><span></span><span></span><span class="taali"></span><span></span><span></span><span></span>
+            </div>
+            <p class="bols">dha dhin dhin dha &nbsp;|&nbsp; dha dhin dhin dha</p>
+            <div class="footer-links">
+                <a href="https://www.linkedin.com/in/sripalideb" target="_blank" rel="noopener noreferrer">linkedin</a>
+                <span aria-hidden="true">·</span>
+                <a href="https://sripalideb.medium.com" target="_blank" rel="noopener noreferrer">medium</a>
+                <span aria-hidden="true">·</span>
+                <a href="https://github.com/sripalideb" target="_blank" rel="noopener noreferrer">github</a>
+            </div>
+            <p class="colophon">© {{ now.Format "2006" }} sri — designed like a mehfil: dim the lights, hold the moment.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.querySelector('.menu-btn');
+            const open = menu.hasAttribute('hidden');
+            if (open) { menu.removeAttribute('hidden'); } else { menu.setAttribute('hidden', ''); }
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            btn.classList.toggle('is-open', open);
+        }
+    </script>
+</body>
+
+</html>

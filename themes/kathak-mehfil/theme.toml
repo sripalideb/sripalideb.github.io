@@ -1,0 +1,9 @@
+name = "Kathak Mehfil"
+license = "MIT"
+description = "The stage at night — warm black, alta red, brass gold. A mehfil for sri."
+tags = ["dark", "kathak", "personal", "blog"]
+features = ["blog", "projects", "resources", "tags"]
+min_version = "0.100.0"
+
+[author]
+  name = "sri"

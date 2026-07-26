@@ -1,0 +1,85 @@
+{{ $id := substr (md5 (printf "%s-%d" (.Get 0) now.UnixNano)) 0 8 }}
+{{ $url := .Get 0 }}
+
+<div class="pdf-embed" id="pdf-{{ $id }}" tabindex="0" aria-label="Embedded PDF viewer">
+    <div class="pdf-stage">
+        <div class="pdf-loader" id="pdf-loader-{{ $id }}">loading pdf…</div>
+        <canvas id="pdf-canvas-{{ $id }}"></canvas>
+    </div>
+    <div class="pdf-bar">
+        <span class="pdf-pages">page <b id="pdf-num-{{ $id }}">1</b> / <span id="pdf-count-{{ $id }}">–</span></span>
+        <span class="pdf-ctrl">
+            <button type="button" id="pdf-prev-{{ $id }}" aria-label="Previous page">&larr;</button>
+            <button type="button" id="pdf-next-{{ $id }}" aria-label="Next page">&rarr;</button>
+            <a href="{{ $url }}" target="_blank" rel="noopener noreferrer">open &nearr;</a>
+        </span>
+    </div>
+</div>
+
+<script>
+    if (!window.pdfjsLib && !window.__pdfjsLoading) {
+        window.__pdfjsLoading = true;
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        s.async = true;
+        s.onload = () => {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            document.dispatchEvent(new CustomEvent('pdfjsLoadingComplete'));
+        };
+        document.head.appendChild(s);
+    }
+
+    (function () {
+        const url = '{{ $url }}';
+        const id = '{{ $id }}';
+        let pdfDoc = null, pageNum = 1, rendering = false, pending = null;
+
+        const wrapper = document.getElementById(`pdf-${id}`);
+        const canvas = document.getElementById(`pdf-canvas-${id}`);
+        const ctx = canvas.getContext('2d');
+        const loader = document.getElementById(`pdf-loader-${id}`);
+
+        function init() {
+            if (!window.pdfjsLib) { document.addEventListener('pdfjsLoadingComplete', init, { once: true }); return; }
+            pdfjsLib.getDocument(url).promise.then(pdf => {
+                pdfDoc = pdf;
+                document.getElementById(`pdf-count-${id}`).textContent = pdf.numPages;
+                loader.style.display = 'none';
+                render(pageNum);
+            }, err => {
+                console.error(err);
+                loader.innerHTML = `couldn't load the pdf — <a href="${url}">download it instead</a>`;
+            });
+        }
+        init();
+
+        function render(num) {
+            rendering = true;
+            pdfDoc.getPage(num).then(page => {
+                const base = page.getViewport({ scale: 1.5 });
+                const w = wrapper.clientWidth || base.width;
+                const scale = base.width > w ? 1.5 * (w / base.width) : 1.5;
+                const vp = page.getViewport({ scale: scale });
+                canvas.height = vp.height; canvas.width = vp.width;
+                page.render({ canvasContext: ctx, viewport: vp }).promise.then(() => {
+                    rendering = false;
+                    if (pending !== null) { const p = pending; pending = null; render(p); }
+                });
+            });
+            document.getElementById(`pdf-num-${id}`).textContent = num;
+            document.getElementById(`pdf-prev-${id}`).disabled = num <= 1;
+            document.getElementById(`pdf-next-${id}`).disabled = pdfDoc && num >= pdfDoc.numPages;
+        }
+
+        function queue(num) { if (rendering) { pending = num; } else { render(num); } }
+        function prev() { if (pageNum > 1) queue(--pageNum); }
+        function next() { if (pdfDoc && pageNum < pdfDoc.numPages) queue(++pageNum); }
+
+        document.getElementById(`pdf-prev-${id}`).addEventListener('click', prev);
+        document.getElementById(`pdf-next-${id}`).addEventListener('click', next);
+        wrapper.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') prev();
+            else if (e.key === 'ArrowRight') next();
+        });
+    })();
+</script>

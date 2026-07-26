@@ -1,0 +1,9 @@
+name = "Kathak Baithak"
+license = "MIT"
+description = "The folk-print gathering — rust, teal, ink and mustard geometry, bold borders, hard shadows."
+tags = ["light", "kathak", "personal", "blog", "geometric"]
+features = ["blog", "projects", "resources", "tags"]
+min_version = "0.100.0"
+
+[author]
+  name = "sri"

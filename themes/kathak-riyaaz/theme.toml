@@ -1,0 +1,9 @@
+name = "Kathak Riyaaz"
+license = "MIT"
+description = "Morning practice — grainy terracotta, warm paper, a diary kept between rehearsals."
+tags = ["light", "kathak", "personal", "blog", "diary"]
+features = ["blog", "projects", "resources", "tags"]
+min_version = "0.100.0"
+
+[author]
+  name = "sri"

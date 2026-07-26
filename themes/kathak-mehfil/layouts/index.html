@@ -1,0 +1,52 @@
+{{ define "main" }}
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div class="chakkar" aria-hidden="true">
+      <svg viewBox="0 0 200 200" class="chakkar-ring">
+        <g fill="currentColor">
+          <circle cx="100" cy="10" r="3"/><circle cx="134.4" cy="16.9" r="3"/><circle cx="163.6" cy="36.4" r="3"/>
+          <circle cx="183.1" cy="65.6" r="3"/><circle cx="190" cy="100" r="3"/><circle cx="183.1" cy="134.4" r="3"/>
+          <circle cx="163.6" cy="163.6" r="3"/><circle cx="134.4" cy="183.1" r="3"/><circle cx="100" cy="190" r="3"/>
+          <circle cx="65.6" cy="183.1" r="3"/><circle cx="36.4" cy="163.6" r="3"/><circle cx="16.9" cy="134.4" r="3"/>
+          <circle cx="10" cy="100" r="3"/><circle cx="16.9" cy="65.6" r="3"/><circle cx="36.4" cy="36.4" r="3"/>
+          <circle cx="65.6" cy="16.9" r="3"/>
+        </g>
+      </svg>
+      <span class="chakkar-heart"></span>
+    </div>
+
+    <p class="overline">mehfil · an evening gathering</p>
+
+    <h1>hi! i'm <em>sri</em><span class="alta-dot">.</span></h1>
+
+    <p class="lede">
+      i design, dance, build, and play with ai, and this site is my little
+      diary where i yap about it all.
+    </p>
+  </div>
+</section>
+
+<section class="programme">
+  <div class="wrap programme-inner">
+    <h2 class="programme-title">tonight's programme</h2>
+    <ol class="programme-list">
+      {{ range $i, $item := .Site.Menus.main }}
+      <li>
+        <a href="{{ $item.URL }}">
+          <span class="programme-num">{{ printf "%02d" (add $i 1) }}</span>
+          <span class="programme-name">{{ $item.Name }}</span>
+          <span class="programme-hint">
+            {{ if eq $item.Name "about" }}the dancer behind the diary{{ end }}
+            {{ if eq $item.Name "blog" }}stories, stumbles, small lessons{{ end }}
+            {{ if eq $item.Name "projects" }}things i've shaped with my hands{{ end }}
+            {{ if eq $item.Name "resources" }}what i keep going back to{{ end }}
+            {{ if eq $item.Name "contact" }}come say hi, i'll save you a seat{{ end }}
+          </span>
+          <span class="programme-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </li>
+      {{ end }}
+    </ol>
+  </div>
+</section>
+{{ end }}

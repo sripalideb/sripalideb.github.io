@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="{{ site.Language.Lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+    <meta name="author" content="{{ .Site.Params.author }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ .Permalink }}">
+    <meta property="og:title" content="{{ if .Title }}{{ .Title }}{{ else }}{{ .Site.Title }}{{ end }}">
+    <meta property="og:description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ .Permalink }}">
+    <meta property="twitter:title" content="{{ if .Title }}{{ .Title }} - {{ .Site.Title }}{{ else }}{{ .Site.Title }}{{ end }}">
+    <meta property="twitter:description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+    <title>{{ if .Title }}{{ .Title }} - {{ .Site.Title }}{{ else }}{{ .Site.Title }}{{ end }}</title>
+
+    <link rel="stylesheet" href="/css/baithak.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="wrap header-inner">
+            <a href="{{ .Site.BaseURL }}" class="brand">sri<span class="brand-dot">.</span></a>
+
+            <nav class="site-nav" aria-label="Main">
+                <ul>
+                    {{ range .Site.Menus.main }}
+                    {{ $isActive := eq .URL $.Page.RelPermalink }}
+                    <li><a href="{{ .URL }}" {{ if $isActive }}class="is-active" aria-current="page"{{ end }}>{{ .Name }}</a></li>
+                    {{ end }}
+                </ul>
+            </nav>
+
+            <button class="menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+
+        <nav id="mobile-menu" class="mobile-nav" hidden aria-label="Mobile">
+            <ul>
+                {{ range .Site.Menus.main }}
+                {{ $isActive := eq .URL $.Page.RelPermalink }}
+                <li><a href="{{ .URL }}" {{ if $isActive }}class="is-active" aria-current="page"{{ end }}>{{ .Name }}</a></li>
+                {{ end }}
+            </ul>
+        </nav>
+
+        <div class="pattern-band" aria-hidden="true"></div>
+    </header>
+
+    <main>
+        {{ block "main" . }}{{ end }}
+    </main>
+
+    <footer class="site-footer">
+        <div class="pattern-band" aria-hidden="true"></div>
+        <div class="wrap footer-inner">
+            <p class="bols">dha ge na ti &nbsp;&middot;&nbsp; na ka dhi na &nbsp;&middot;&nbsp; dha ge na ti</p>
+            <div class="footer-links">
+                <a href="https://www.linkedin.com/in/sripalideb" target="_blank" rel="noopener noreferrer">linkedin</a>
+                <a href="https://sripalideb.medium.com" target="_blank" rel="noopener noreferrer">medium</a>
+                <a href="https://github.com/sripalideb" target="_blank" rel="noopener noreferrer">github</a>
+            </div>
+            <p class="colophon">© {{ now.Format "2006" }} sri &mdash; pull up a cushion, the baithak's just getting started.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.querySelector('.menu-btn');
+            const open = menu.hasAttribute('hidden');
+            if (open) { menu.removeAttribute('hidden'); } else { menu.setAttribute('hidden', ''); }
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            btn.classList.toggle('is-open', open);
+        }
+    </script>
+</body>
+
+</html>

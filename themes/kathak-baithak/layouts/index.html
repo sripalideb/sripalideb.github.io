@@ -1,0 +1,44 @@
+{{ define "main" }}
+<section class="hero">
+  <div class="wrap">
+    <div class="ornament-row" aria-hidden="true">
+      <span class="orn orn-circle"></span>
+      <span class="orn orn-triangle"></span>
+      <span class="orn orn-half"></span>
+      <span class="orn orn-diamond"></span>
+      <span class="orn orn-eye"></span>
+      <span class="orn orn-triangle orn-flip"></span>
+      <span class="orn orn-circle orn-teal"></span>
+    </div>
+
+    <p class="overline">baithak &middot; a sit-down gathering &middot; everyone's invited</p>
+
+    <h1>hi! i'm <span class="hero-name">sri</span><span class="brand-dot">.</span></h1>
+
+    <p class="lede">
+      i design, dance, build, and play with ai, and this site is my little
+      diary where i yap about it all.
+    </p>
+  </div>
+</section>
+
+<section class="tiles">
+  <div class="wrap">
+    <div class="tile-grid">
+      {{ range $i, $item := .Site.Menus.main }}
+      <a href="{{ $item.URL }}" class="tile tile-{{ math.Mod $i 5 }}">
+        <span class="tile-shape" aria-hidden="true"></span>
+        <span class="tile-name">{{ $item.Name }}</span>
+        <span class="tile-hint">
+          {{ if eq $item.Name "about" }}the one hosting{{ end }}
+          {{ if eq $item.Name "blog" }}stories &amp; stumbles{{ end }}
+          {{ if eq $item.Name "projects" }}made by hand{{ end }}
+          {{ if eq $item.Name "resources" }}the good shelf{{ end }}
+          {{ if eq $item.Name "contact" }}come say hi{{ end }}
+        </span>
+      </a>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
